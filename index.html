@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clientreis - technologie-laag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0efe8;color:#1a1a2e;font-family:Nunito,'Segoe UI',system-ui,sans-serif}
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 24px;background:#fff;border-bottom:1px solid #e0dfd8}
+h1{font-size:17px;font-weight:900;display:flex;align-items:center;gap:8px;color:#2D3561}
+h1 small{display:block;font-size:10.5px;font-weight:600;color:#888;margin-top:1px}
+.spacer{flex:1}
+.switch{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.switch b{font-size:12px;font-weight:800;color:#555}
+.switch input{position:absolute;opacity:0;pointer-events:none}
+.track{width:44px;height:22px;border-radius:11px;background:#ccc;position:relative;transition:background .3s;flex:none}
+.track::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .3s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.switch input:checked+.track{background:#4A2D8D}
+.switch input:checked+.track::after{transform:translateX(22px)}
+main{padding:12px 16px 20px;max-width:1800px;margin:0 auto}
+.stage{position:relative;border-radius:10px;overflow:hidden;box-shadow:0 3px 16px rgba(0,0,0,.08);background:#fff}
+.stage img{display:block;width:100%;height:auto;transition:opacity .5s}
+body.on .stage img{opacity:.22}
+.tech-layer{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .45s;pointer-events:none}
+body.on .tech-layer{opacity:1;pointer-events:auto}
+.tech-flow{max-width:1800px;margin:32px auto 0;background:#fff;border-radius:12px;padding:32px 28px;box-shadow:0 3px 16px rgba(0,0,0,.08)}
+.tech-flow h2{font-size:20px;font-weight:900;color:#2D3561;text-align:center;margin-bottom:4px}
+.tech-flow .sub{font-size:12px;color:#888;text-align:center;margin-bottom:28px}
+.flow-row{display:flex;align-items:stretch;gap:0;justify-content:center;flex-wrap:wrap}
+.flow-step{flex:1;min-width:180px;max-width:240px;padding:20px 18px;border-radius:14px;text-align:center}
+.flow-step h3{font-size:15px;font-weight:900;margin-bottom:6px}
+.flow-step p{font-size:11.5px;color:#555;line-height:1.5}
+.flow-step .modules{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.flow-step .mod{font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.06);color:#333}
+.flow-arrow{display:flex;align-items:center;justify-content:center;width:40px;flex-shrink:0}
+.flow-arrow svg{color:#bbb}
+.fs-1{background:#E8F5E9;border:2px solid #2D6A4F} .fs-1 h3{color:#2D6A4F}
+.fs-2{background:#F0EBFF;border:2px solid #3D2C8D} .fs-2 h3{color:#3D2C8D}
+.fs-3{background:#FFF5EB;border:2px solid #D4770B} .fs-3 h3{color:#D4770B}
+.fs-4{background:#EBFFF5;border:2px solid #0D6E6E} .fs-4 h3{color:#0D6E6E}
+.fs-5{background:#FFEBEB;border:2px solid #C0392B} .fs-5 h3{color:#C0392B}
+footer{padding:10px 24px 20px;text-align:center;font-size:10px;color:#bbb}
+
+/* Modal overlay */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;padding:30px}
+.modal-overlay.show{display:flex}
+.modal-card{background:#fff;border-radius:16px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative}
+.modal-card .modal-header{padding:24px 28px 12px;border-bottom:1px solid #eee}
+.modal-card .modal-header h2{font-size:24px;font-weight:900;margin:0}
+.modal-card .modal-header p{font-size:14px;color:#555;margin-top:6px;line-height:1.6}
+.modal-card .modal-img{width:100%;display:block;padding:16px 28px}
+.modal-card .modal-img img{width:100%;border-radius:10px;border:1px solid #eee}
+.modal-close{position:absolute;top:16px;right:20px;background:none;border:none;font-size:24px;cursor:pointer;color:#888;font-weight:700}
+.modal-close:hover{color:#333}
+@media(max-width:900px){.flow-row{flex-direction:column;align-items:center}.flow-arrow{transform:rotate(90deg);width:auto;height:30px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <div>De reis van onze client
+      <small>Technologie-laag &mdash; hoe InnovatieLab het zorgproces ondersteunt</small>
+    </div>
+  </h1>
+  <div class="spacer"></div>
+  <label class="switch"><b>Technologie-laag</b><input type="checkbox" id="tgl" checked><span class="track"></span></label>
+</header>
+<main>
+  <div class="stage">
+    <img src="clientreis.png" alt="Clientreis infographic">
+    <svg class="tech-layer" viewBox="0 0 1672 1050" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ag" markerWidth="12" markerHeight="8" refX="12" refY="4" orient="auto"><path d="M0,0 L12,4 L0,8" fill="#2D6A4F"/></marker>
+        <marker id="ap" markerWidth="12" markerHeight="8" refX="12" refY="4" orient="auto"><path d="M0,0 L12,4 L0,8" fill="#3D2C8D"/></marker>
+        <marker id="ar" markerWidth="12" markerHeight="8" refX="12" refY="4" orient="auto"><path d="M0,0 L12,4 L0,8" fill="#C0392B"/></marker>
+        <marker id="ab" markerWidth="12" markerHeight="8" refX="12" refY="4" orient="auto"><path d="M0,0 L12,4 L0,8" fill="#2563EB"/></marker>
+        <marker id="ao" markerWidth="12" markerHeight="8" refX="12" refY="4" orient="auto"><path d="M0,0 L12,4 L0,8" fill="#D4770B"/></marker>
+      </defs>
+      <style>
+        .lbl rect.bg{fill:rgba(255,255,255,.94);rx:7;filter:drop-shadow(0 2px 6px rgba(0,0,0,.1))}
+        .lbl .nm{font-family:Nunito,sans-serif;font-weight:900;font-size:14px}
+        .lbl .ds{font-family:Nunito,sans-serif;font-weight:500;font-size:9px;fill:#555}
+        .arr{fill:none;stroke-width:2;opacity:.55}
+      </style>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!--  KENNISMAKING (groen)                  -->
+      <!-- ═══════════════════════════════════════ -->
+
+      <!-- Formulieren → bij "Samen met uw naaste(n)" -->
+      <g class="lbl">
+        <rect class="bg" x="20" y="475" width="370" height="185" stroke="#2D6A4F" stroke-width="2.5"/>
+        <text class="nm" x="32" y="497" fill="#2D6A4F">Formulieren</text>
+        <text class="ds" x="32" y="513">Digitale vragenlijsten waarmee client en naasten samen het profiel</text>
+        <text class="ds" x="32" y="523">invullen. Gegevens worden direct verwerkt in het platform.</text>
+        <image href="screenshot-formulieren.png" x="30" y="532" width="350" height="122" preserveAspectRatio="xMidYMin slice"/>
+      </g>
+      <path class="arr" stroke="#2D6A4F" marker-end="url(#ag)" d="M200,475 L200,450"/>
+
+      <!-- Gesprekken (groen) → kennismakingsgesprek -->
+      <g class="lbl">
+        <rect class="bg" x="20" y="670" width="310" height="90" stroke="#2D6A4F" stroke-width="2.5"/>
+        <image href="screenshot-gesprekken.png" x="28" y="678" width="75" height="75" preserveAspectRatio="xMidYMid slice"/>
+        <text class="nm" x="112" y="696" fill="#2D6A4F">Gesprekken module</text>
+        <text class="ds" x="112" y="712">AI legt het kennismakingsgesprek vast.</text>
+        <text class="ds" x="112" y="722">Minder typen, meer aandacht</text>
+        <text class="ds" x="112" y="732">voor de client.</text>
+      </g>
+      <path class="arr" stroke="#2D6A4F" marker-end="url(#ag)" d="M20,700 C5,650 0,560 5,480"/>
+
+
+      <!-- ═══════════════════════════════════════ -->
+      <!--  KOPPELKERN (paars)                    -->
+      <!--  Elke chip wijst naar zijn orbit-item  -->
+      <!-- ═══════════════════════════════════════ -->
+
+      <!-- Activiteiten → Activiteitenaanbod cirkel (54%,34% = x903 y320) -->
+      <g class="lbl">
+        <rect class="bg" x="940" y="140" width="370" height="165" stroke="#3D2C8D" stroke-width="2.5"/>
+        <text class="nm" x="952" y="162" fill="#3D2C8D">Activiteiten</text>
+        <text class="ds" x="952" y="178">Planningsmodule voor dorpspleinen, verenigingen en daginvulling.</text>
+        <text class="ds" x="952" y="188">Koppelt het aanbod aan interesses van bewoners.</text>
+        <image href="screenshot-activiteiten.png" x="950" y="195" width="350" height="105" preserveAspectRatio="xMidYMin slice"/>
+      </g>
+      <path class="arr" stroke="#3D2C8D" marker-end="url(#ap)" d="M940,220 C930,250 920,285 910,310"/>
+
+      <!-- Slimme Planning → Koppelkern centrum (44%,52% = x736 y489) -->
+      <g class="lbl">
+        <rect class="bg" x="250" y="340" width="340" height="150" stroke="#3D2C8D" stroke-width="2.5"/>
+        <text class="nm" x="262" y="361" fill="#3D2C8D">Slimme Planning</text>
+        <text class="ds" x="262" y="377">Het hart van de koppelkern. Brengt zorgvraag,</text>
+        <text class="ds" x="262" y="387">beschikbaarheid en roosters samen.</text>
+        <text class="ds" x="262" y="397">Matcht de juiste mensen aan de client.</text>
+        <image href="screenshot-planning.png" x="258" y="403" width="324" height="82" preserveAspectRatio="xMidYMin slice"/>
+      </g>
+      <path class="arr" stroke="#3D2C8D" marker-end="url(#ap)" d="M590,420 C640,440 680,460 725,482"/>
+
+      <!-- Locatiegram → Beschikbare capaciteit cirkel (55%,52% = x920 y489) -->
+      <g class="lbl">
+        <rect class="bg" x="1050" y="370" width="370" height="165" stroke="#3D2C8D" stroke-width="2.5"/>
+        <text class="nm" x="1062" y="392" fill="#3D2C8D">Locatiegram</text>
+        <text class="ds" x="1062" y="408">Digitaal platform om locaties, kamers en ruimtes te beheren.</text>
+        <text class="ds" x="1062" y="418">Per gebouw alle gegevens en beschikbaarheid bijhouden.</text>
+        <image href="screenshot-locatiegram.png" x="1060" y="425" width="350" height="105" preserveAspectRatio="xMidYMin slice"/>
+      </g>
+      <path class="arr" stroke="#3D2C8D" marker-end="url(#ap)" d="M1050,455 C1010,465 970,478 935,488"/>
+
+      <!-- Informele ondersteuning → Betrokken inzet cirkel (54%,69% = x903 y648) -->
+      <g class="lbl">
+        <rect class="bg" x="1020" y="560" width="370" height="145" stroke="#3D2C8D" stroke-width="2.5"/>
+        <text class="nm" x="1032" y="581" fill="#3D2C8D">Informele ondersteuning module</text>
+        <text class="ds" x="1032" y="597">Registreert vrijwilligers en naasten, houdt</text>
+        <text class="ds" x="1032" y="607">beschikbaarheid bij en analyseert inzet.</text>
+        <image href="screenshot-informeel.png" x="1028" y="614" width="354" height="86" preserveAspectRatio="xMidYMin slice"/>
+      </g>
+      <path class="arr" stroke="#3D2C8D" marker-end="url(#ap)" d="M1020,625 C980,632 950,640 915,648"/>
+
+      <!-- Statistieken → Kennis & inzichten cirkel (34%,69% = x568 y648) -->
+      <g class="lbl">
+        <rect class="bg" x="340" y="680" width="370" height="175" stroke="#3D2C8D" stroke-width="2.5"/>
+        <text class="nm" x="352" y="702" fill="#3D2C8D">Statistieken</text>
+        <text class="ds" x="352" y="718">Compliance, KPI's en trends in een dashboard. Maakt zichtbaar</text>
+        <text class="ds" x="352" y="728">wat goed gaat en waar verbetering nodig is.</text>
+        <image href="screenshot-statistieken.png" x="350" y="735" width="350" height="115" preserveAspectRatio="xMidYMin slice"/>
+      </g>
+      <path class="arr" stroke="#3D2C8D" marker-end="url(#ap)" d="M470,680 C500,670 530,660 555,652"/>
+
+
+      <!-- ═══════════════════════════════════════ -->
+      <!--  LEEFPLAN (rood)                       -->
+      <!-- ═══════════════════════════════════════ -->
+
+      <!-- Schermen → afdelingsinformatie rechts -->
+      <g class="lbl">
+        <rect class="bg" x="1300" y="550" width="360" height="165" stroke="#C0392B" stroke-width="2.5"/>
+        <text class="nm" x="1312" y="571" fill="#C0392B">Schermen</text>
+        <text class="ds" x="1312" y="587">Dagprogramma en mededelingen automatisch</text>
+        <text class="ds" x="1312" y="597">zichtbaar op de afdeling.</text>
+        <image href="screenshot-schermen.png" x="1308" y="604" width="344" height="106" preserveAspectRatio="xMidYMin slice"/>
+      </g>
+      <path class="arr" stroke="#C0392B" marker-end="url(#ar)" d="M1460,550 L1460,500"/>
+
+
+      <!-- ═══════════════════════════════════════ -->
+      <!--  BETROKKEN GROEPEN                     -->
+      <!-- ═══════════════════════════════════════ -->
+
+      <!-- Gesprekken (blauw) → Medewerkers (x≈550-780 y≈660-810) -->
+      <g class="lbl">
+        <rect class="bg" x="530" y="860" width="400" height="80" stroke="#2563EB" stroke-width="2.5"/>
+        <image href="screenshot-gesprekken-mw.png" x="538" y="868" width="70" height="65" preserveAspectRatio="xMidYMid slice"/>
+        <text class="nm" x="618" y="886" fill="#2563EB">Gesprekken module</text>
+        <text class="ds" x="618" y="902">Gesprekscycli medewerkers met management.</text>
+        <text class="ds" x="618" y="912">AI legt samenvatting en actiepunten vast.</text>
+      </g>
+      <path class="arr" stroke="#2563EB" marker-end="url(#ab)" d="M700,860 L720,810"/>
+
+
+      <!-- ═══════════════════════════════════════ -->
+      <!--  LEREN & VERBETEREN (oranje)           -->
+      <!-- ═══════════════════════════════════════ -->
+
+      <g class="lbl">
+        <rect class="bg" x="1050" y="830" width="400" height="155" stroke="#D4770B" stroke-width="2.5"/>
+        <text class="nm" x="1062" y="851" fill="#D4770B">Gesprekken + Statistieken</text>
+        <text class="ds" x="1062" y="867">Evaluaties en data sturen het plan bij.</text>
+        <text class="ds" x="1062" y="877">IDO-cycli en gesprekscycli vastgelegd.</text>
+        <image href="screenshot-leren.png" x="1058" y="884" width="384" height="96" preserveAspectRatio="xMidYMin slice"/>
+      </g>
+      <path class="arr" stroke="#D4770B" marker-end="url(#ao)" d="M1250,830 L1250,800"/>
+
+    </svg>
+  </div>
+
+</main>
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-card">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-header">
+      <h2 id="modalTitle"></h2>
+      <p id="modalDesc"></p>
+    </div>
+    <div class="modal-img" id="modalImgWrap">
+      <img id="modalImg" src="" alt="">
+    </div>
+  </div>
+</div>
+
+<footer>Zinzia Zorggroep &middot; InnovatieLab</footer>
+<script>
+const tgl=document.getElementById('tgl');
+const applyToggle=()=>document.body.classList.toggle('on',tgl.checked);
+tgl.addEventListener('change',applyToggle);
+applyToggle();
+
+// Modal data per module
+const modules = {
+  formulieren: {
+    title: 'Formulieren',
+    desc: 'Digitale vragenlijsten waarmee client en naasten samen het profiel invullen. Gegevens worden direct verwerkt in het platform, geen papierwerk meer. Formulieren kunnen op maat gemaakt worden per type kennismaking.',
+    img: 'screenshot-formulieren.png'
+  },
+  gesprekken: {
+    title: 'Gesprekken',
+    desc: 'AI legt het kennismakingsgesprek automatisch vast. De medewerker hoeft niet mee te typen — het gesprek wordt opgenomen en omgezet naar een samenvatting, actiepunten en afspraken. Meer aandacht voor de client, minder administratie.',
+    img: 'screenshot-gesprekken.png'
+  },
+  planning: {
+    title: 'Slimme Planning',
+    desc: 'Het hart van de koppelkern. Brengt zorgvraag, beschikbaarheid en roosters samen. Laat per uur zien hoeveel zorg er nodig is, wie er beschikbaar is en waar de knelpunten zitten. Matcht de juiste mensen op het juiste moment aan de client.',
+    img: 'screenshot-planning.png'
+  },
+  activiteiten: {
+    title: 'Activiteiten',
+    desc: 'Planningsmodule voor dorpspleinen, verenigingen en daginvulling. Toont een weekoverzicht van alle activiteiten per locatie. Koppelt het aanbod aan de interesses en mogelijkheden van bewoners.',
+    img: 'screenshot-activiteiten.png'
+  },
+  locatiegram: {
+    title: 'Locatiegram',
+    desc: 'Digitaal platform om locaties, kamers en ruimtes te beheren. Per gebouw alle gegevens en beschikbaarheid bijhouden. Laat zien wie waar woont, welke ruimtes beschikbaar zijn en wat de capaciteit is.',
+    img: 'screenshot-locatiegram.png'
+  },
+  informeel: {
+    title: 'Informele ondersteuning module',
+    desc: 'Registreert vrijwilligers en naasten, houdt beschikbaarheid bij en analyseert inzet. Toont per persoon contactgegevens, beschikbare dagen, frequentie en voorkeuren. Inclusief VOG-status en koppeling met AFAS.',
+    img: 'screenshot-informeel.png'
+  },
+  statistieken: {
+    title: 'Statistieken',
+    desc: 'Compliance, KPI\'s en trends in een dashboard. Maakt zichtbaar wat goed gaat en waar verbetering nodig is. Toont per categorie de voortgang en geeft een totaaloverzicht van de compliance status.',
+    img: 'screenshot-statistieken.png'
+  },
+  gesprekken_mw: {
+    title: 'Gesprekken (medewerkers)',
+    desc: 'Gesprekscycli van medewerkers met management. AI legt automatisch een samenvatting, actiepunten en afspraken vast. Onderdeel van de jaarlijkse gesprekscyclus: voorbereiding, gesprek, AI legt vast, follow-up.',
+    img: 'screenshot-gesprekken-mw.png'
+  },
+  schermen: {
+    title: 'Schermen',
+    desc: 'Informatieschermen op afdelingen en woningen. Tonen automatisch het dagprogramma, activiteiten en mededelingen. Altijd actueel, zonder handmatig bijwerken.',
+    img: 'screenshot-schermen.png'
+  },
+  gesprekken_stat: {
+    title: 'Gesprekken + Statistieken',
+    desc: 'Evaluaties en data sturen het plan bij. IDO-cycli met bewoners en naasten worden vastgelegd. Gesprekscycli van medewerkers ook. De combinatie van gesprekken en statistieken zorgt voor een continu leer- en verbeterproces.',
+    img: 'screenshot-leren.png'
+  }
+};
+
+// Add data-module attributes to SVG chips
+const chipData = [
+  'formulieren','gesprekken','activiteiten','planning',
+  'locatiegram','informeel','statistieken','schermen','gesprekken_mw','gesprekken_stat'
+];
+
+// Assign module IDs to chips in order
+document.querySelectorAll('.tech-layer .lbl').forEach((lbl, i) => {
+  if (chipData[i]) {
+    lbl.style.cursor = 'pointer';
+    lbl.dataset.module = chipData[i];
+  }
+});
+
+// Modal logic
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modalTitle');
+const modalDesc = document.getElementById('modalDesc');
+const modalImg = document.getElementById('modalImg');
+const modalImgWrap = document.getElementById('modalImgWrap');
+
+document.querySelector('.tech-layer').addEventListener('click', e => {
+  const lbl = e.target.closest('.lbl');
+  if (!lbl || !lbl.dataset.module) return;
+  const mod = modules[lbl.dataset.module];
+  if (!mod) return;
+  modalTitle.textContent = mod.title;
+  modalTitle.style.color = getComputedStyle(lbl.querySelector('.nm')).fill;
+  modalDesc.textContent = mod.desc;
+  if (mod.img) {
+    modalImg.src = mod.img;
+    modalImgWrap.style.display = 'block';
+  } else {
+    modalImgWrap.style.display = 'none';
+  }
+  modal.classList.add('show');
+});
+
+document.getElementById('modalClose').addEventListener('click', () => modal.classList.remove('show'));
+modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
+</script>
+</body>
+</html>
